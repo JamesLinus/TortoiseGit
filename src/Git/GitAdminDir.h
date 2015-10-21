@@ -43,6 +43,7 @@ public:
 	static CString GetSuperProjectRoot(const CString& path);
 
 	static bool GetAdminDirPath(const CString &projectTopDir, CString& adminDir);
+	static bool GetWorktreeAdminDirPath(const CString& projectTopDir, CString& adminDir);
 	static CString ReadGitLink(const CString& topDir, const CString& dotGitPath);
 
 	static CString GetGitTopDir(const CString& path);

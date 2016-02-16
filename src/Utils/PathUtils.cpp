@@ -560,4 +560,18 @@ CString CPathUtils::ExcludeTrailingPathDelimiter(CString path)
 	return path.TrimRight(L'\\');
 }
 
+CString CPathUtils::ExpandFileName(const CString& path)
+{
+	if (path.IsEmpty())
+		return path;
+	DWORD ret = 0;
+	ret = GetFullPathName(path, 0, nullptr, nullptr);
+	if (ret)
+	{
+		CString sRet;
+		return ((ret = GetFullPathName(path, ret, CStrBuf(sRet, ret), nullptr)) != 0) ? sRet : path;
+	}
+
+	return path;
+}
 #endif

@@ -97,3 +97,23 @@ TEST(CPathUtils, TrailingPathDelimiter)
 	tPath = L"C:\\my\\path\\";
 	EXPECT_STREQ(CPathUtils::ExcludeTrailingPathDelimiter(tPath), L"C:\\my\\path");
 }
+
+TEST(CPathUtils, ExpandFileName)
+{
+	// It should eliminate ..
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"C:\\my\\path\\..\\da\\da\\da"), L"C:\\my\\da\\da\\da");
+	// It should eliminate .
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"C:\\my\\path\\.\\da\\da\\da"), L"C:\\my\\path\\da\\da\\da");
+	// It should not mess with trailing path delimiter if it is there
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"C:\\my\\path\\..\\da\\da\\da\\"), L"C:\\my\\da\\da\\da\\");
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"C:\\my\\path\\.\\da\\da\\da\\"), L"C:\\my\\path\\da\\da\\da\\");
+
+	// It should support UNC file paths::: ALL PATHS FROM ABOVE WILL PASS ASSUMING UNC ROOT
+	// It should eliminate ..
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"\\\\DACOMPUTER\\my\\path\\..\\da\\da\\da"), L"\\\\DACOMPUTER\\my\\da\\da\\da");
+	// It should eliminate .
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"\\\\DACOMPUTER\\my\\path\\.\\da\\da\\da"), L"\\\\DACOMPUTER\\my\\path\\da\\da\\da");
+	// It should not mess with trailing path delimiter if it is there
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"\\\\DACOMPUTER\\my\\path\\..\\da\\da\\da\\"), L"\\\\DACOMPUTER\\my\\da\\da\\da\\");
+	EXPECT_STREQ(CPathUtils::ExpandFileName(L"\\\\DACOMPUTER\\my\\path\\.\\da\\da\\da\\"), L"\\\\DACOMPUTER\\my\\path\\da\\da\\da\\");
+}

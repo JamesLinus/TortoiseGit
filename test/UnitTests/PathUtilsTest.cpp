@@ -85,3 +85,15 @@ TEST(CPathUtils, MakeSureDirectoryPathExists)
 	EXPECT_TRUE(PathIsDirectory(tmpDir.GetTempDir() + L"\\sub\\asub"));
 	EXPECT_TRUE(PathIsDirectory(tmpDir.GetTempDir() + L"\\sub\\asub\\adir"));
 }
+
+TEST(CPathUtils, TrailingPathDelimiter)
+{
+	CString tPath = L"C:\\my\\path";
+	EXPECT_STREQ(CPathUtils::IncludeTrailingPathDelimiter(tPath), L"C:\\my\\path\\");
+	tPath = L"C:\\my\\path\\";
+	EXPECT_STREQ(CPathUtils::IncludeTrailingPathDelimiter(tPath), L"C:\\my\\path\\");
+	tPath = L"C:\\my\\path";
+	EXPECT_STREQ(CPathUtils::ExcludeTrailingPathDelimiter(tPath), L"C:\\my\\path");
+	tPath = L"C:\\my\\path\\";
+	EXPECT_STREQ(CPathUtils::ExcludeTrailingPathDelimiter(tPath), L"C:\\my\\path");
+}

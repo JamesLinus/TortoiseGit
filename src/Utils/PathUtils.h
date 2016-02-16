@@ -122,6 +122,22 @@ public:
 	 */
 	static CString GetVersionFromFile(const CString & p_strFilename);
 
+	/**
+	* Returns a valid path guaranteeing that a valid path delimiter follows.
+	* If the delimiter already exists, an additional delimiter will not be added.
+	* \param path to ensure
+	* \return path including path delimiter
+	*/
+	static CString IncludeTrailingPathDelimiter(const CString& path);
+
+	/**
+	* Returns a valid path guaranteeing that a valid path delimiter does NOT follows.
+	* If the delimiter already exists, the existing delimiter will be eliminated.
+	* \param path to ensure
+	* \return path including excluding delimiter
+	*/
+	static CString ExcludeTrailingPathDelimiter(CString path);
+
 	static CString GetCopyrightForSelf();
 #endif
 };

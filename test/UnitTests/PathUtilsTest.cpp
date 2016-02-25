@@ -117,3 +117,29 @@ TEST(CPathUtils, ExpandFileName)
 	EXPECT_STREQ(CPathUtils::ExpandFileName(L"\\\\DACOMPUTER\\my\\path\\..\\da\\da\\da\\"), L"\\\\DACOMPUTER\\my\\da\\da\\da\\");
 	EXPECT_STREQ(CPathUtils::ExpandFileName(L"\\\\DACOMPUTER\\my\\path\\.\\da\\da\\da\\"), L"\\\\DACOMPUTER\\my\\path\\da\\da\\da\\");
 }
+
+TEST(CPathUtils, IsSamePath)
+{
+	//Compare the same path
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\da\\da\\da"));
+	//Compare the non-same path
+	EXPECT_FALSE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\this\\is\\a\\new\\path"));
+	//Compare the non-same path because of going back a path at the end
+	EXPECT_FALSE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\da\\da\\da\\.."));
+	//Compare the same path because of staying in same directory at the end
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\da\\da\\da\\."));
+	//Compare the same path because of staying in same directory at the end (with trailing path delimiter)
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\da\\da\\da\\.\\"));
+	//Compare when including backslash
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\da\\da\\da\\"));
+	//Compare the same path when one goes back one directory in the middle
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\..\\path\\da\\da\\da"));
+	//Compare the same path when we stay in the same directory
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\.\\.\\da\\da\\da"));
+	//Check if injecting a difference in case causes problems
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\..\\path\\da\\DA\\da"));
+	//Check when the directories are the same when the ..\ is right before the end
+	EXPECT_TRUE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\..\\path\\da\\da\\da\\..\\da"));
+	//Check for non-matching paths
+	EXPECT_FALSE(CPathUtils::IsSamePath(L"C:\\my\\path\\da\\da\\da", L"C:\\my\\path\\..\\path\\da\\da\\da\\.\\da"));
+}

@@ -574,4 +574,23 @@ CString CPathUtils::ExpandFileName(const CString& path)
 
 	return path;
 }
+
+CString CPathUtils::NormalizePath(const CString& path)
+{
+	// Account DOS 8.3 file/folder names
+	CString nPath = GetLongPathname(path);
+	// Account for ..\ and .\ that may occur in each path
+	// Account for case
+	nPath = ExpandFileName(nPath).MakeLower();
+	// Account for a directory that can either have a trailing \ or not by just stripping it off
+	nPath = ExcludeTrailingPathDelimiter(nPath);
+	return nPath;
+}
+
+bool CPathUtils::IsSamePath(const CString& path1, const CString& path2)
+{
+	CString nPath1 = NormalizePath(path1);
+	CString nPath2 = NormalizePath(path2);
+	return (nPath1 == nPath2);
+}
 #endif

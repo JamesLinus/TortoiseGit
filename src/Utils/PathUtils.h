@@ -147,6 +147,29 @@ public:
 	*/
 	static CString CPathUtils::ExpandFileName(const CString& path);
 
+	/**
+	* This method will make a path uniquely comparable to another path.  It will do the following.  
+	* 1.) Modify all characters in the path to be lower case
+	* 2.) Account for ..\'s and .\'s that may occur in the middle of the path and remove them
+	* 3.) Expand a path that has DOS 8.3 file/folder names
+	* 4.) Remove the trailing path delimiter at the end
+	* 5.) The function does not account for symlinks at this point in time.
+	* \param path to normalize
+	* \return normalized path
+	*/
+	static CString CPathUtils::NormalizePath(const CString& path);
+
+	/**
+	* Compares two paths and returns true if they are the same path.  This method
+	* accounts for ..\'s and .\'s that may occur in the middle of the paths as well
+	* as case sensitivity.  The function does not account for symlinks at this point
+	* in time.
+	* \param path #1 to compare
+	* \param path #2 to compare
+	* \return true if they are the same path
+	*/
+	static bool CPathUtils::IsSamePath(const CString& path1, const CString& path2);
+
 	static CString GetCopyrightForSelf();
 #endif
 };

@@ -54,9 +54,32 @@ protected:
 	}
 };
 
+class CBasicGitWithMultiLinkedTestRepoFixture : public CBasicGitWithTestRepoCreatorFixture
+{
+protected:
+	virtual void SetUp()
+	{
+		CBasicGitWithTestRepoCreatorFixture::SetUp();
+		// Setup the main worktree
+		SetUpTestRepo(m_MainWorkTreePath);
+
+		// Now setup a linked worktree using git worktree with an absolute path
+		CString output;
+		CString erroroutput;
+		m_Git.m_CurrentDir = m_MainWorkTreePath;
+		SetCurrentDirectory(m_MainWorkTreePath); 
+		EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + m_LinkedWorkTreePath + "\"", &output, &erroroutput, CP_UTF8));
+		EXPECT_TRUE(!output.IsEmpty());
+	}
+
+	CString m_MainWorkTreePath = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\MainWorkTree\\";
+	CString m_LinkedWorkTreePath = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\LinkedWorkTree\\";
+};
+
 INSTANTIATE_TEST_CASE_P(GitIndex, GitIndexCBasicGitFixture, testing::Values(LIBGIT2));
 INSTANTIATE_TEST_CASE_P(GitIndex, GitIndexCBasicGitWithEmptyRepositoryFixture, testing::Values(LIBGIT2));
 INSTANTIATE_TEST_CASE_P(GitIndex, GitIndexCBasicGitWithTestRepoFixture, testing::Values(LIBGIT2));
+INSTANTIATE_TEST_CASE_P(GitIndex, CBasicGitWithMultiLinkedTestRepoFixture, testing::Values(LIBGIT2));
 
 TEST_P(GitIndexCBasicGitFixture, EmptyDir)
 {
@@ -642,4 +665,9 @@ TEST(GitIndex, CGitIgnoreItem)
 	EXPECT_EQ(1, ignoreItem.IsPathIgnored("subdir/something", type));
 	EXPECT_EQ(-1, ignoreItem.IsPathIgnored("subdir/something/more", type));
 	EXPECT_EQ(1, ignoreItem.IsPathIgnored("subdir/some-dir/something", type));
+}
+
+TEST_P(CBasicGitWithMultiLinkedTestRepoFixture, AdminIndex2)
+{
+	EXPECT_TRUE(1==1);
 }

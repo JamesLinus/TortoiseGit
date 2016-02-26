@@ -117,6 +117,11 @@ protected:
 		CString resourcesDir;
 		ASSERT_TRUE(GetResourcesDir(resourcesDir));
 		CString pathNoDelim = CPathUtils::ExcludeTrailingPathDelimiter(path);
+		SetCurrentDirectory(pathNoDelim);
+		// Make sure the repo directory exists first (but we can't just call CreateDirectory() because it will fail
+		// if it already exists.  We may want to look into implementing ForceDirectory() to make things easier
+		if (!PathIsDirectory(pathNoDelim))
+			EXPECT_TRUE(CreateDirectory(pathNoDelim, nullptr));
 		if (!prefix.IsEmpty())
 			EXPECT_TRUE(CreateDirectory(pathNoDelim + prefix, nullptr));
 		CString repoDir = resourcesDir + L"\\" + m_reponame;

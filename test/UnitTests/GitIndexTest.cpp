@@ -60,24 +60,60 @@ protected:
 	virtual void SetUp()
 	{
 		CBasicGitWithTestRepoCreatorFixture::SetUp();
-		// Setup the main worktree
-		SetUpTestRepo(m_MainWorkTreePath);
 
-		// Now setup a linked worktree using git worktree with an absolute path
 		CString output;
 		CString erroroutput;
+
+		// ====Main Work Tree Setup====
+		SetUpTestRepo(m_MainWorkTreePath);
+
+		output.Empty();
+		erroroutput.Empty();
 		m_Git.m_CurrentDir = m_MainWorkTreePath;
-		SetCurrentDirectory(m_MainWorkTreePath); 
+		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
+		EXPECT_EQ(0, m_Git.Run(L"git.exe checkout -f master", &output, &erroroutput, CP_UTF8));
+		EXPECT_TRUE(!output.IsEmpty());
+
+		// ====Source of the Sub-Module====
+		// Setup the repository in which the submodule will be fetched from
+		SetUpTestRepo(m_SubmoduleSource);
+
+		//====Sub-Module Inside of The Main Work Tree (Root Level)====
+		output.Empty();
+		erroroutput.Empty();
+		m_Git.m_CurrentDir = m_MainWorkTreePath;
+		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
+		EXPECT_EQ(0, m_Git.Run(L"git.exe submodule add \"" + CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource) + "\" sub1", &output, &erroroutput, CP_UTF8));
+		EXPECT_TRUE(!output.IsEmpty());
+
+		output.Empty();
+		erroroutput.Empty();
+		m_Git.m_CurrentDir = m_MainWorkTreePath;
+		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
+		EXPECT_EQ(0, m_Git.Run(L"git.exe commit -a -m\"Add submodule for testing\"", &output, &erroroutput, CP_UTF8));
+		EXPECT_TRUE(!output.IsEmpty());
+
+		// ====Sub-Module Inside of The Main Work Tree (Depth 2)==== [NOT DONE]
+
+		// ====Linked Work Tree (Absolute Path)====
+		// Linked worktree using git worktree with an absolute path
 
 		// current version of git does not work with trailing backslash -- hense: ExcludeTrailingPathDelimiter
 		CString pTemp = CPathUtils::ExcludeTrailingPathDelimiter(m_LinkedWorkTreePath);
 
+		output.Empty();
+		erroroutput.Empty();
+		m_Git.m_CurrentDir = m_MainWorkTreePath;
+		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
 		EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + pTemp + "\"", &output, &erroroutput, CP_UTF8));
 		EXPECT_TRUE(!output.IsEmpty());
+
+		// ====Linked Work Tree (Absolute Path)==== [NOT DONE]
 	}
 
 	CString m_MainWorkTreePath = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\MainWorkTree\\";
 	CString m_LinkedWorkTreePath = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\LinkedWorkTree\\";
+	CString m_SubmoduleSource = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\SubmoduleSource\\";
 };
 
 INSTANTIATE_TEST_CASE_P(GitIndex, GitIndexCBasicGitFixture, testing::Values(LIBGIT2));

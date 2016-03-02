@@ -84,7 +84,7 @@ protected:
 		m_Git.m_CurrentDir = m_MainWorkTreePath;
 		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
 		EXPECT_EQ(0, m_Git.Run(L"git.exe submodule add \"" + CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource) + "\" sub1", &output, &erroroutput, CP_UTF8));
-		EXPECT_TRUE(!output.IsEmpty());
+		EXPECT_TRUE(output.IsEmpty());
 
 		output.Empty();
 		erroroutput.Empty();
@@ -709,5 +709,53 @@ TEST(GitIndex, CGitIgnoreItem)
 
 TEST_P(CBasicGitWithMultiLinkedTestRepoFixture, AdminIndex2)
 {
-	EXPECT_TRUE(1==1);
+	CString adminDir;
+	CString workDir;
+	// Test if the main work tree admin directory can be found (**WITH** trailing path delimiter)
+	adminDir = g_AdminDirMap.GetAdminDir(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath));
+	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git", adminDir));
+
+	// Test if the main work tree admin directory can be found (**WITHOUT** trailing path delimiter)
+	adminDir = g_AdminDirMap.GetAdminDir(CPathUtils::ExcludeTrailingPathDelimiter(m_MainWorkTreePath));
+	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git", adminDir));
+
+	// Test main work tree reverse lookup (**WITH** trailing path delimiter)
+	workDir = g_AdminDirMap.GetWorkingCopy(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git\\");
+	EXPECT_TRUE(CPathUtils::IsSamePath(m_MainWorkTreePath, workDir));
+
+	// Test test main work tree reverse lookup (**WITHOUT** trailing path delimiter)
+	workDir = g_AdminDirMap.GetWorkingCopy(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git");
+	EXPECT_TRUE(CPathUtils::IsSamePath(m_MainWorkTreePath, workDir));
+
+	// Test if the sub-module admin directory can be found (**WITH** trailing path delimiter)
+	// Test if the sub-module admin directory can be found (**WITHOUT** trailing path delimiter)
+
+	// Test if reverse lookup on submodule works (**WITH** trailing path delimiter)
+	// Test if reverse lookup on submodule works (**WITHOUT** trailing path delimiter)
+
+	// Test if the linked repository admin directory can be found (**WITH** trailing path delimiter)
+	adminDir = g_AdminDirMap.GetAdminDir(CPathUtils::IncludeTrailingPathDelimiter(m_LinkedWorkTreePath));
+	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git", adminDir));
+
+	// Test if the linked repository admin directory can be found (**WITHOUT** trailing path delimiter)
+	adminDir = g_AdminDirMap.GetAdminDir(CPathUtils::ExcludeTrailingPathDelimiter(m_LinkedWorkTreePath));
+	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git", adminDir));
+
+	// Test if reverse lookup on linked repository works (**WITH** trailing path delimiter)
+	// Test if reverse lookup on linked repository works (**WITHOUT** trailing path delimiter)
+
+	return;
+	// Now start dealing with more complex lookups (sub-modules and multiple worktree's linked to a common admin dir)
+	CString output;
+	CString erroroutput;
+	CString linkedWorkTree; // = m_Dir1.GetTempDir();
+
+	// Check for linked work tree
+	m_Git.m_CurrentDir = m_Dir.GetTempDir();
+	EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + linkedWorkTree + "\"", &output, &erroroutput, CP_UTF8));
+	EXPECT_TRUE(!output.IsEmpty());
+	adminDir = g_AdminDirMap.GetAdminDir(linkedWorkTree);
+	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L".git", adminDir));
+
+	// Check for a submodule
 }

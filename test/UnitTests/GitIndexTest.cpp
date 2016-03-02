@@ -68,7 +68,11 @@ protected:
 		CString erroroutput;
 		m_Git.m_CurrentDir = m_MainWorkTreePath;
 		SetCurrentDirectory(m_MainWorkTreePath); 
-		EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + m_LinkedWorkTreePath + "\"", &output, &erroroutput, CP_UTF8));
+
+		// current version of git does not work with trailing backslash -- hense: ExcludeTrailingPathDelimiter
+		CString pTemp = CPathUtils::ExcludeTrailingPathDelimiter(m_LinkedWorkTreePath);
+
+		EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + pTemp + "\"", &output, &erroroutput, CP_UTF8));
 		EXPECT_TRUE(!output.IsEmpty());
 	}
 

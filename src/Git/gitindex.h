@@ -435,6 +435,7 @@ class CGitAdminDirMap:public std::map<CString, CString>
 public:
 	CComCriticalSection			m_critIndexSec;
 	std::map<CString, CString>	m_reverseLookup;
+	std::map<CString, CString>	m_WorktreeAdminDirLookup;
 
 	CGitAdminDirMap() { m_critIndexSec.Init(); }
 	~CGitAdminDirMap() { m_critIndexSec.Term(); }
@@ -470,10 +471,40 @@ public:
 		return result;
 	}
 
+	CString GetWorktreeAdminDir(const CString& path)
+	{
+		CString thePath(CPathUtils::NormalizePath(path));
+		thePath.TrimRight(L'\\');
+		thePath.AppendChar(L'\\');
+		CAutoLocker lock(m_critIndexSec);
+		auto lookup = m_WorktreeAdminDirLookup.find(thePath);
+		if (lookup == m_WorktreeAdminDirLookup.cend())
+		{
+			CString wtadmindir;
+			GitAdminDir::GetWorktreeAdminDirPath(thePath, wtadmindir);
+			if (PathIsDirectory(wtadmindir))
+			{
+				wtadmindir = CPathUtils::IncludeTrailingPathDelimiter(CPathUtils::NormalizePath(wtadmindir));
+				m_WorktreeAdminDirLookup[thePath] = wtadmindir;
+				m_reverseLookup[wtadmindir] = thePath;
+				return m_WorktreeAdminDirLookup[thePath];
+			}
+			return thePath + L".git\\"; // in case of an error stick to old behavior // TODO: we should never get here?! at least the comment is WRONG!!!
+		}
+
+		return lookup->second;
+	}
+
+	CString GetWorktreeAdminDirConcat(const CString& path, const CString& subpath)
+	{
+		CString result(GetWorktreeAdminDir(path));
+		result += subpath;
+		return result;
+	}
+
 	CString GetWorkingCopy(const CString &gitDir)
 	{
-		CString path(gitDir);
-		path.MakeLower();
+		CString path(CPathUtils::NormalizePath(gitDir));
 		path.TrimRight(L'\\');
 		path.AppendChar(L'\\');
 		CAutoLocker lock(m_critIndexSec);

@@ -744,18 +744,19 @@ TEST_P(CBasicGitWithMultiLinkedTestRepoFixture, AdminIndex2)
 	// Test if reverse lookup on linked repository works (**WITH** trailing path delimiter)
 	// Test if reverse lookup on linked repository works (**WITHOUT** trailing path delimiter)
 
-	return;
-	// Now start dealing with more complex lookups (sub-modules and multiple worktree's linked to a common admin dir)
-	CString output;
-	CString erroroutput;
-	CString linkedWorkTree; // = m_Dir1.GetTempDir();
+	// Test if the linked worktree admin directory can be found (**WITH** trailing path delimiter)
+	adminDir = g_AdminDirMap.GetWorktreeAdminDir(CPathUtils::IncludeTrailingPathDelimiter(m_LinkedWorkTreePath));
+	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git\\worktrees\\LinkedWorkTree", adminDir));
 
-	// Check for linked work tree
-	m_Git.m_CurrentDir = m_Dir.GetTempDir();
-	EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + linkedWorkTree + "\"", &output, &erroroutput, CP_UTF8));
-	EXPECT_TRUE(!output.IsEmpty());
-	adminDir = g_AdminDirMap.GetAdminDir(linkedWorkTree);
-	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L".git", adminDir));
+	// Test if the linked worktree admin directory can be found (**WITHOUT** trailing path delimiter)
+	adminDir = g_AdminDirMap.GetWorktreeAdminDir(CPathUtils::ExcludeTrailingPathDelimiter(m_LinkedWorkTreePath));
+	EXPECT_TRUE(CPathUtils::IsSamePath(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git\\worktrees\\LinkedWorkTree", adminDir));
 
-	// Check for a submodule
+	// Test reverse lookup on linked worktree admin directory (**WITH** trailing path delimiter)
+	workDir = g_AdminDirMap.GetWorkingCopy(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git\\worktrees\\LinkedWorkTree\\");
+	EXPECT_TRUE(CPathUtils::IsSamePath(m_LinkedWorkTreePath, workDir));
+
+	// Test reverse lookup on linked worktree admin directory (**WITHOUT** trailing path delimiter)
+	workDir = g_AdminDirMap.GetWorkingCopy(CPathUtils::IncludeTrailingPathDelimiter(m_MainWorkTreePath) + L".git\\worktrees\\LinkedWorkTree");
+	EXPECT_TRUE(CPathUtils::IsSamePath(m_LinkedWorkTreePath, workDir));
 }

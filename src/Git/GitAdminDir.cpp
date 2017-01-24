@@ -133,7 +133,7 @@ bool GitAdminDir::HasAdminDir(const CString& path, bool bDir, CString* ProjectTo
  * Returns the .git-path (if .git is a file, read the repository path and return it)
  * adminDir always ends with "\"
  */
-bool GitAdminDir::GetAdminDirPath(const CString &projectTopDir, CString& adminDir)
+bool GitAdminDir::GetAdminDirPath(const CString &projectTopDir, CString& adminDir, bool* isWorktree)
 {
 	CString wtAdminDir;
 	if (!GetWorktreeAdminDirPath(projectTopDir, wtAdminDir))
@@ -143,6 +143,8 @@ bool GitAdminDir::GetAdminDirPath(const CString &projectTopDir, CString& adminDi
 	if (!PathFileExists(pathToCommonDir))
 	{
 		adminDir = wtAdminDir;
+		if (isWorktree)
+			*isWorktree = false;
 		return true;
 	}
 
@@ -164,6 +166,8 @@ bool GitAdminDir::GetAdminDirPath(const CString &projectTopDir, CString& adminDi
 		adminDir = commonDir;
 	adminDir.TrimRight(L'\\');
 	adminDir.Append(L"\\");
+	if (isWorktree)
+		*isWorktree = true;
 	return true;
 }
 

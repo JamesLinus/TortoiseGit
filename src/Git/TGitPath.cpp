@@ -748,21 +748,25 @@ int CTGitPath::GetAdminDirMask() const
 	}
 
 	CString dotGitPath;
-	GitAdminDir::GetWorktreeAdminDirPath(m_sProjectRoot, dotGitPath);
+	bool isWorktree;
+	GitAdminDir::GetAdminDirPath(m_sProjectRoot, dotGitPath, &isWorktree);
+	if (HasStashDir(dotGitPath))
+		status |= ITEMIS_STASH;
+
+	if (PathFileExists(dotGitPath + L"svn"))
+		status |= ITEMIS_GITSVN;
+
+	if (isWorktree)
+	{
+		dotGitPath.Empty();
+		GitAdminDir::GetWorktreeAdminDirPath(m_sProjectRoot, dotGitPath);
+	}
 
 	if (PathFileExists(dotGitPath + L"BISECT_START"))
 		status |= ITEMIS_BISECT;
 
 	if (PathFileExists(dotGitPath + L"MERGE_HEAD"))
 		status |= ITEMIS_MERGEACTIVE;
-
-	dotGitPath.Empty();
-	GitAdminDir::GetAdminDirPath(m_sProjectRoot, dotGitPath);
-	if (HasStashDir(dotGitPath))
-		status |= ITEMIS_STASH;
-
-	if (PathFileExists(dotGitPath + L"svn"))
-		status |= ITEMIS_GITSVN;
 
 	if (PathFileExists(m_sProjectRoot + L"\\.gitmodules"))
 		status |= ITEMIS_SUBMODULECONTAINER;

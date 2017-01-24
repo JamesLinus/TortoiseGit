@@ -42,7 +42,7 @@ public:
 	static bool HasAdminDir(const CString& path, bool bDir, CString* ProjectTopDir = nullptr, bool* IsAdminDirPath = nullptr);
 	static CString GetSuperProjectRoot(const CString& path);
 
-	static bool GetAdminDirPath(const CString &projectTopDir, CString& adminDir);
+	static bool GetAdminDirPath(const CString& projectTopDir, CString& adminDir, bool* isWorktree = nullptr);
 	static bool GetWorktreeAdminDirPath(const CString& projectTopDir, CString& adminDir);
 	static CString ReadGitLink(const CString& topDir, const CString& dotGitPath);
 

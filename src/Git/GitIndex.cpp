@@ -938,7 +938,7 @@ bool CGitIgnoreList::CheckAndUpdateIgnoreFiles(const CString& gitdir, const CStr
 		}
 
 		temp.Truncate(temp.GetLength() - (int)wcslen(L"\\.gitignore"));
-		if (CTGitPath::ArePathStringsEqual(temp, gitdir))
+		if (CPathUtils::ArePathStringsEqual(temp, gitdir))
 		{
 			CString adminDir = g_AdminDirMap.GetAdminDir(temp);
 			CString wcglobalgitignore = adminDir + L"info\\exclude";
@@ -1127,7 +1127,7 @@ int CGitIgnoreList::CheckIgnore(const CString &path, const CString &projectroot,
 
 		temp.Truncate(temp.GetLength() - (int)wcslen(L"\\.gitignore"));
 
-		if (CTGitPath::ArePathStringsEqual(temp, projectroot))
+		if (CPathUtils::ArePathStringsEqual(temp, projectroot))
 		{
 			CString adminDir = g_AdminDirMap.GetAdminDir(temp);
 			CString wcglobalgitignore = adminDir;

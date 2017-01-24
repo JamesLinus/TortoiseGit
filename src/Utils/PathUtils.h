@@ -170,6 +170,13 @@ public:
 	*/
 	static bool CPathUtils::IsSamePath(const CString& path1, const CString& path2);
 
+	/**
+	* Checks if two path strings are equal. No conversion of slashes is done!
+	* \remark for slash-independent comparison, use IsEquivalentTo()
+	*/
+	static bool ArePathStringsEqual(const CString& sP1, const CString& sP2);
+	static bool ArePathStringsEqualWithCase(const CString& sP1, const CString& sP2);
+
 	static CString GetCopyrightForSelf();
 #endif
 };

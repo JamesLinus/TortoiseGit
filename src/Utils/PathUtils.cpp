@@ -591,6 +591,48 @@ bool CPathUtils::IsSamePath(const CString& path1, const CString& path2)
 {
 	CString nPath1 = NormalizePath(path1);
 	CString nPath2 = NormalizePath(path2);
-	return (nPath1 == nPath2);
+	return ArePathStringsEqualWithCase(nPath1, nPath2);
+}
+
+bool CPathUtils::ArePathStringsEqual(const CString& sP1, const CString& sP2)
+{
+	int length = sP1.GetLength();
+	if (length != sP2.GetLength())
+	{
+		// Different lengths
+		return false;
+	}
+	// We work from the end of the strings, because path differences
+	// are more likely to occur at the far end of a string
+	LPCTSTR pP1Start = sP1;
+	LPCTSTR pP1 = pP1Start + (length - 1);
+	LPCTSTR pP2 = ((LPCTSTR)sP2) + (length - 1);
+	while (length-- > 0)
+	{
+		if (_totlower(*pP1--) != _totlower(*pP2--))
+			return false;
+	}
+	return true;
+}
+
+bool CPathUtils::ArePathStringsEqualWithCase(const CString& sP1, const CString& sP2)
+{
+	int length = sP1.GetLength();
+	if (length != sP2.GetLength())
+	{
+		// Different lengths
+		return false;
+	}
+	// We work from the end of the strings, because path differences
+	// are more likely to occur at the far end of a string
+	LPCTSTR pP1Start = sP1;
+	LPCTSTR pP1 = pP1Start + (length - 1);
+	LPCTSTR pP2 = ((LPCTSTR)sP2) + (length - 1);
+	while (length-- > 0)
+	{
+		if ((*pP1--) != (*pP2--))
+			return false;
+	}
+	return true;
 }
 #endif

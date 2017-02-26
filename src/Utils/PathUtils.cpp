@@ -553,6 +553,7 @@ CString CPathUtils::IncludeTrailingPathDelimiter(const CString& path)
 	if (!result.IsEmpty() && result[result.GetLength() - 1] != L'\\')
 		result.AppendChar(L'\\');
 	return result;
+	// or is "result.TrimRight(L'\\');result.AppendChar(L'\\');" faster?
 }
 
 CString CPathUtils::ExcludeTrailingPathDelimiter(CString path)

@@ -458,6 +458,7 @@ public:
 				m_reverseLookup[adminDir] = thePath;
 				return (*this)[thePath];
 			}
+			ASSERT(FALSE);
 			return thePath + L".git\\"; // in case of an error stick to old behavior
 		}
 
@@ -489,6 +490,7 @@ public:
 				m_reverseLookup[wtadmindir] = thePath;
 				return m_WorktreeAdminDirLookup[thePath];
 			}
+			ASSERT(FALSE);
 			return thePath + L".git\\"; // in case of an error stick to old behavior // TODO: we should never get here?! at least the comment is WRONG!!!
 		}
 

@@ -219,7 +219,7 @@ CString GitAdminDir::ReadGitLink(const CString& topDir, const CString& dotGitPat
 	gitPath.TrimRight('\\');
 	if (!gitPath.IsEmpty() && gitPath[0] == L'.')
 	{
-		gitPath = topDir + L'\\' + gitPath;
+		gitPath = CPathUtils::IncludeTrailingPathDelimiter(topDir) + gitPath;
 		CString adminDir;
 		PathCanonicalize(CStrBuf(adminDir, MAX_PATH), gitPath);
 		return adminDir;

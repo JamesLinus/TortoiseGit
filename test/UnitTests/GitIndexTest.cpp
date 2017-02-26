@@ -83,8 +83,14 @@ protected:
 		erroroutput.Empty();
 		m_Git.m_CurrentDir = m_MainWorkTreePath;
 		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
-		EXPECT_EQ(0, m_Git.Run(L"git.exe submodule add \"" + CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource) + "\" sub1", &output, &erroroutput, CP_UTF8));
-		EXPECT_TRUE(output.IsEmpty());
+		wprintf((LPCTSTR)m_SubmoduleSource);
+		wprintf(L"\r\n");
+		wprintf((LPCTSTR)CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource));
+		wprintf(L"\r\n");
+		EXPECT_EQ(0, m_Git.Run(L"git.exe submodule add \"" + CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource) + L"\" sub1", &output, &erroroutput, CP_UTF8));
+		EXPECT_STREQ(L"", output);
+		wprintf((LPCTSTR)erroroutput);
+		wprintf(L"\r\n");
 
 		output.Empty();
 		erroroutput.Empty();
@@ -92,6 +98,10 @@ protected:
 		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
 		EXPECT_EQ(0, m_Git.Run(L"git.exe commit -a -m\"Add submodule for testing\"", &output, &erroroutput, CP_UTF8));
 		EXPECT_TRUE(!output.IsEmpty());
+		wprintf((LPCTSTR)output);
+		wprintf(L"\r\n");
+		wprintf((LPCTSTR)erroroutput);
+		wprintf(L"\r\n");
 
 		// ====Sub-Module Inside of The Main Work Tree (Depth 2)==== [NOT DONE]
 
@@ -105,8 +115,14 @@ protected:
 		erroroutput.Empty();
 		m_Git.m_CurrentDir = m_MainWorkTreePath;
 		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
-		EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + pTemp + "\"", &output, &erroroutput, CP_UTF8));
+		wprintf((LPCTSTR)pTemp);
+		wprintf(L"\r\n");
+		EXPECT_EQ(0, m_Git.Run(L"git.exe worktree add -b TestBranch \"" + pTemp + L"\"", &output, &erroroutput, CP_UTF8));
 		EXPECT_TRUE(!output.IsEmpty());
+		wprintf((LPCTSTR)output);
+		wprintf(L"\r\n");
+		wprintf((LPCTSTR)erroroutput);
+		wprintf(L"\r\n");
 
 		// ====Linked Work Tree (Absolute Path)==== [NOT DONE]
 	}

@@ -340,6 +340,9 @@ int CGit::RunAsync(CString cmd, PROCESS_INFORMATION* piOut, HANDLE* hReadOut, HA
 	}
 	else if (ms_bCygwinGit && startsWithGit && !CStringUtils::StartsWith(cmd, L"git.exe config "))
 	{
+		int drive;
+		while ((drive = cmd.Find(L":\\")) != -1)
+			cmd = cmd.Left(drive - 1) + L"/cygdrive/" + cmd.GetAt(drive - 1) + cmd.Mid(drive + 1);
 		cmd.Replace(L'\\', L'/');
 		cmd.Replace(L"\"", L"\\\"");
 		cmd = L'"' + CGit::ms_LastMsysGitDir + L"\\bash.exe\" -c \"/bin/" + cmd + L'"';

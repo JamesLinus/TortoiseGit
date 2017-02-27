@@ -74,6 +74,8 @@ protected:
 		EXPECT_EQ(0, m_Git.Run(L"git.exe checkout -f master", &output, &erroroutput, CP_UTF8));
 		EXPECT_TRUE(!output.IsEmpty());
 
+		CString m_SubmoduleSource = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\SubmoduleSource";
+
 		// ====Source of the Sub-Module====
 		// Setup the repository in which the submodule will be fetched from
 		SetUpTestRepo(m_SubmoduleSource);
@@ -83,13 +85,13 @@ protected:
 		erroroutput.Empty();
 		m_Git.m_CurrentDir = m_MainWorkTreePath;
 		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
-		wprintf((LPCTSTR)m_SubmoduleSource);
+		wprintf(L"%s", (LPCTSTR)m_SubmoduleSource);
 		wprintf(L"\r\n");
-		wprintf((LPCTSTR)CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource));
+		wprintf(L"%s", (LPCTSTR)CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource));
 		wprintf(L"\r\n");
-		EXPECT_EQ(0, m_Git.Run(L"git.exe submodule add \"" + CPathUtils::ExcludeTrailingPathDelimiter(m_SubmoduleSource) + L"\" sub1", &output, &erroroutput, CP_UTF8));
+		EXPECT_EQ(0, m_Git.Run(L"git.exe submodule add \"" + m_SubmoduleSource + L"\" sub1", &output, &erroroutput, CP_UTF8));
 		EXPECT_STREQ(L"", output);
-		wprintf((LPCTSTR)erroroutput);
+		wprintf(L"%s", (LPCTSTR)erroroutput);
 		wprintf(L"\r\n");
 
 		output.Empty();
@@ -98,9 +100,9 @@ protected:
 		EXPECT_NE(0, SetCurrentDirectory(m_MainWorkTreePath));
 		EXPECT_EQ(0, m_Git.Run(L"git.exe commit -a -m\"Add submodule for testing\"", &output, &erroroutput, CP_UTF8));
 		EXPECT_TRUE(!output.IsEmpty());
-		wprintf((LPCTSTR)output);
+		wprintf(L"%s", (LPCTSTR)output);
 		wprintf(L"\r\n");
-		wprintf((LPCTSTR)erroroutput);
+		wprintf(L"%s", (LPCTSTR)erroroutput);
 		wprintf(L"\r\n");
 
 		// ====Sub-Module Inside of The Main Work Tree (Depth 2)==== [NOT DONE]
@@ -129,7 +131,6 @@ protected:
 
 	CString m_MainWorkTreePath = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\MainWorkTree\\";
 	CString m_LinkedWorkTreePath = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\LinkedWorkTree\\";
-	CString m_SubmoduleSource = CPathUtils::ExcludeTrailingPathDelimiter(m_Dir.GetTempDir()) + L"\\SubmoduleSource\\";
 };
 
 INSTANTIATE_TEST_CASE_P(GitIndex, GitIndexCBasicGitFixture, testing::Values(LIBGIT2));
